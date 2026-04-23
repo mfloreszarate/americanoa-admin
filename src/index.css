@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  }
+
+  body {
+    @apply font-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-headline;
+  }
+
+  .botanical-pattern {
+    background-color: #3a1555;
+    background-image: radial-gradient(#b8f47a 0.5px, transparent 0.5px),
+      radial-gradient(#b8f47a 0.5px, #3a1555 0.5px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    opacity: 0.1;
+  }
+
+  .botanical-gradient {
+    background: linear-gradient(135deg, #3a1555 0%, #512d6d 100%);
+  }
+
+  .ghost-border-focus:focus-within {
+    box-shadow: 0 0 0 2px rgba(60, 106, 0, 0.4);
+  }
+}

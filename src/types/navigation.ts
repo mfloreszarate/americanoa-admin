@@ -1,0 +1,7 @@
+export interface NavItem {
+  id: string;
+  label: string;
+  icon: string;
+  /** React Router path */
+  to: string;
+}

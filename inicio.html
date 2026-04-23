@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>América NOA - Botanical Archivist Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#c5cf38",
+            "on-secondary-fixed-variant": "#2c5000",
+            "inverse-surface": "#2e3132",
+            "on-surface-variant": "#4b444f",
+            "tertiary-fixed": "#e1eb53",
+            "tertiary-container": "#3d4100",
+            "primary-container": "#512d6d",
+            "on-primary-container": "#c298e0",
+            "secondary-fixed-dim": "#9dd761",
+            "on-background": "#191c1d",
+            "surface-container-lowest": "#ffffff",
+            "inverse-primary": "#e1b6ff",
+            "surface-container": "#edeeef",
+            "outline": "#7d7480",
+            "primary": "#3a1555",
+            "outline-variant": "#cec3d0",
+            "on-error-container": "#93000a",
+            "on-secondary-fixed": "#0e2000",
+            "surface-bright": "#f8f9fa",
+            "surface-variant": "#e1e3e4",
+            "on-tertiary-fixed": "#1b1d00",
+            "error-container": "#ffdad6",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#e1e3e4",
+            "surface-tint": "#744e91",
+            "surface-container-low": "#f3f4f5",
+            "primary-fixed-dim": "#e1b6ff",
+            "tertiary": "#272a00",
+            "secondary-fixed": "#b8f47a",
+            "surface": "#f8f9fa",
+            "on-tertiary-fixed-variant": "#464a00",
+            "primary-fixed": "#f2daff",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "secondary-container": "#b8f47a",
+            "on-surface": "#191c1d",
+            "secondary": "#3c6a00",
+            "on-tertiary-container": "#a7b115",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#2c0548",
+            "background": "#f8f9fa",
+            "surface-dim": "#d9dadb",
+            "inverse-on-surface": "#f0f1f2",
+            "on-secondary-container": "#407100",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#e7e8e9",
+            "on-primary-fixed-variant": "#5b3777"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "1rem",
+            "xl": "1.25rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .font-headline {
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(24px);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface">
+  <!-- SideNavBar Shell -->
+  <aside
+    class="h-screen w-64 fixed left-0 top-0 bg-stone-50 flex flex-col py-8 px-4 font-manrope text-sm font-medium z-50">
+    <div class="mb-10 px-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-white" data-icon="deceased">deceased</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-purple-900">América NOA</h1>
+          <p class="text-[10px] uppercase tracking-widest text-stone-500">Botanical Archivist</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-2">
+      <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-purple-900 font-bold border-r-4 border-secondary-fixed bg-stone-100/50 transition-colors"
+        href="#">
+        <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-500 hover:text-purple-700 hover:bg-stone-100/50 transition-colors"
+        href="#">
+        <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+        <span>Products</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-500 hover:text-purple-700 hover:bg-stone-100/50 transition-colors"
+        href="#">
+        <span class="material-symbols-outlined" data-icon="inventory">inventory</span>
+        <span>Stock</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-500 hover:text-purple-700 hover:bg-stone-100/50 transition-colors"
+        href="#">
+        <span class="material-symbols-outlined" data-icon="payments">payments</span>
+        <span>Sales</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-500 hover:text-purple-700 hover:bg-stone-100/50 transition-colors"
+        href="#">
+        <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+        <span>Reports</span>
+      </a>
+    </nav>
+    <div class="mt-auto px-4">
+      <button
+        class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-white rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+        <span>New Sale</span>
+      </button>
+    </div>
+  </aside>
+  <!-- TopNavBar Shell -->
+  <header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 glass-panel px-8 flex justify-between items-center z-40">
+    <div class="flex items-center flex-1">
+      <div class="relative w-full max-w-md">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm"
+          data-icon="search">search</span>
+        <input
+          class="w-full bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-secondary/40"
+          placeholder="Search archives..." type="text" />
+      </div>
+    </div>
+    <div class="flex items-center gap-6">
+      <button class="text-stone-600 hover:text-secondary-container transition-all relative">
+        <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+      </button>
+      <button class="text-stone-600 hover:text-secondary-container transition-all">
+        <span class="material-symbols-outlined" data-icon="settings">settings</span>
+      </button>
+      <div class="flex items-center gap-3 border-l pl-6 border-stone-200">
+        <div class="text-right">
+          <p class="text-xs font-bold text-on-surface">Archivist Admin</p>
+          <p class="text-[10px] text-stone-500">Master Level</p>
+        </div>
+        <img class="w-10 h-10 rounded-full border-2 border-secondary-fixed object-cover"
+          data-alt="close-up portrait of a professional male administrator with a confident expression in a bright modern office setting"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3eujSF31GSjCQx0jByxSHeW_PUXlb1_mfqNhVuBgy28yNGDbgs1MD5jFW6euX4S4kvqZT34pENRPUC_Fq64uWC_PRT3LdSz9p1G6uaO1iVVSvMgiTycGMrKiHKjokZdBI4A9RhzaUKlZTJdAySwR2sYl5SBOhk1CaYEvIXf5L8qb6VxIhDGmOQ8fuEwphLY-epq6-Cud_-WCx8hylSW9EMJNpfccgbnc-QRXR8Cc4uEaaHfPjolUASNf_jFPwltrrxo76TlJwaQ" />
+      </div>
+    </div>
+  </header>
+  <!-- Main Canvas -->
+  <main class="ml-64 pt-24 pb-12 px-8 min-h-screen">
+    <!-- Welcome Header Section -->
+    <section class="mb-10">
+      <h2 class="font-headline text-5xl font-extrabold text-primary tracking-tight mb-2">Botanical Dashboard</h2>
+      <p class="text-on-surface-variant font-body">Welcome back. The archives are thriving today with a 12% increase in
+        curation activity.</p>
+    </section>
+    <!-- Bento Grid Summary Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <!-- Card 1: Total Sales -->
+      <div
+        class="bg-surface-container-lowest p-6 rounded-lg flex flex-col justify-between h-40 group hover:shadow-xl transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+          <div class="p-2 rounded-lg bg-primary-fixed bg-opacity-30">
+            <span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+          </div>
+          <span class="text-secondary text-xs font-bold flex items-center">+8.2% <span
+              class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span></span>
+        </div>
+        <div>
+          <p class="text-stone-500 text-sm font-medium mb-1">Total Sales</p>
+          <p class="text-3xl font-headline font-extrabold text-primary">$42,850.00</p>
+        </div>
+      </div>
+      <!-- Card 2: Active Products -->
+      <div
+        class="bg-surface-container-lowest p-6 rounded-lg flex flex-col justify-between h-40 group hover:shadow-xl transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+          <div class="p-2 rounded-lg bg-secondary-fixed bg-opacity-30">
+            <span class="material-symbols-outlined text-secondary" data-icon="eco">eco</span>
+          </div>
+          <span class="text-stone-400 text-xs font-medium">Updated 2m ago</span>
+        </div>
+        <div>
+          <p class="text-stone-500 text-sm font-medium mb-1">Active Products</p>
+          <p class="text-3xl font-headline font-extrabold text-primary">1,284</p>
+        </div>
+      </div>
+      <!-- Card 3: Low Stock Items -->
+      <div
+        class="bg-surface-container-lowest p-6 rounded-lg flex flex-col justify-between h-40 group hover:shadow-xl transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+          <div class="p-2 rounded-lg bg-error-container bg-opacity-30">
+            <span class="material-symbols-outlined text-error" data-icon="inventory_2">inventory_2</span>
+          </div>
+          <span class="px-2 py-1 bg-error-container text-error rounded-full text-[10px] font-bold">CRITICAL</span>
+        </div>
+        <div>
+          <p class="text-stone-500 text-sm font-medium mb-1">Low Stock Items</p>
+          <p class="text-3xl font-headline font-extrabold text-error">12</p>
+        </div>
+      </div>
+      <!-- Card 4: Daily Customers -->
+      <div
+        class="bg-surface-container-lowest p-6 rounded-lg flex flex-col justify-between h-40 group hover:shadow-xl transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+          <div class="p-2 rounded-lg bg-tertiary-fixed bg-opacity-30">
+            <span class="material-symbols-outlined text-on-tertiary-fixed-variant" data-icon="groups">groups</span>
+          </div>
+          <span class="text-secondary text-xs font-bold flex items-center">+4% <span
+              class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span></span>
+        </div>
+        <div>
+          <p class="text-stone-500 text-sm font-medium mb-1">Daily Customers</p>
+          <p class="text-3xl font-headline font-extrabold text-primary">486</p>
+        </div>
+      </div>
+    </section>
+    <!-- Analytics Section (Charts) -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Sales Trends (Prominent Chart) -->
+      <div class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-lg">
+        <div class="flex justify-between items-center mb-10">
+          <div>
+            <h3 class="text-xl font-headline font-bold text-primary">Weekly Sales Performance</h3>
+            <p class="text-stone-500 text-sm">Revenue growth from botanical curation exports</p>
+          </div>
+          <div class="flex gap-2">
+            <button
+              class="px-4 py-2 rounded-lg bg-surface-container-high text-xs font-bold text-primary">Monthly</button>
+            <button
+              class="px-4 py-2 rounded-lg bg-secondary-container text-xs font-bold text-on-secondary-container">Weekly</button>
+          </div>
+        </div>
+        <!-- Visual Mock of a Line Chart -->
+        <div class="relative h-64 flex items-end justify-between gap-4 px-4 border-b border-surface-container-high">
+          <!-- Grid Lines Background -->
+          <div class="absolute inset-0 flex flex-col justify-between opacity-10">
+            <div class="w-full h-px bg-stone-900"></div>
+            <div class="w-full h-px bg-stone-900"></div>
+            <div class="w-full h-px bg-stone-900"></div>
+            <div class="w-full h-px bg-stone-900"></div>
+          </div>
+          <!-- Decorative Chart Line SVG -->
+          <svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+            <path d="M 0 80 Q 15 70, 30 75 T 45 40 T 60 55 T 75 25 T 100 35" fill="none" stroke="#3a1555"
+              stroke-width="2.5"></path>
+            <path d="M 0 80 Q 15 70, 30 75 T 45 40 T 60 55 T 75 25 T 100 35 V 100 H 0 Z" fill="url(#salesGradient)"
+              opacity="0.1"></path>
+            <defs>
+              <lineargradient id="salesGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#3a1555;stop-opacity:1"></stop>
+                <stop offset="100%" style="stop-color:#3a1555;stop-opacity:0"></stop>
+              </lineargradient>
+            </defs>
+          </svg>
+          <!-- Data Points Labels -->
+          <div
+            class="w-full flex justify-between absolute -bottom-8 px-2 text-[10px] text-stone-400 font-bold uppercase tracking-wider">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+        </div>
+      </div>
+      <!-- Categories Pie Chart -->
+      <div class="bg-surface-container-lowest p-8 rounded-lg flex flex-col">
+        <h3 class="text-xl font-headline font-bold text-primary mb-2">Category Distribution</h3>
+        <p class="text-stone-500 text-sm mb-8">Stock allocation by archival type</p>
+        <div class="relative flex-1 flex flex-col items-center justify-center">
+          <!-- Mock Pie Chart -->
+          <div
+            class="relative w-48 h-48 rounded-full border-[16px] border-surface-container flex items-center justify-center">
+            <div
+              class="absolute inset-[-16px] rounded-full border-[16px] border-primary border-t-transparent border-r-transparent rotate-45">
+            </div>
+            <div
+              class="absolute inset-[-16px] rounded-full border-[16px] border-secondary-fixed border-l-transparent border-b-transparent -rotate-12">
+            </div>
+            <div class="text-center">
+              <span class="block text-2xl font-headline font-extrabold text-primary">85%</span>
+              <span class="text-[10px] font-bold text-stone-400 uppercase tracking-tighter">Utilization</span>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div class="w-full mt-10 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-primary"></div>
+                <span class="text-sm font-medium text-stone-600">Herbal Extracts</span>
+              </div>
+              <span class="text-sm font-bold text-primary">42%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-secondary-fixed"></div>
+                <span class="text-sm font-medium text-stone-600">Dried Specimens</span>
+              </div>
+              <span class="text-sm font-bold text-primary">31%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-tertiary-fixed"></div>
+                <span class="text-sm font-medium text-stone-600">Archival Seeds</span>
+              </div>
+              <span class="text-sm font-bold text-primary">15%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-surface-container-high"></div>
+                <span class="text-sm font-medium text-stone-600">Other</span>
+              </div>
+              <span class="text-sm font-bold text-primary">12%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Secondary Information Row (Asymmetric Layout) -->
+    <section class="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Recent Transactions Table (Takes 8 cols) -->
+      <div class="lg:col-span-8 bg-surface-container-lowest rounded-lg overflow-hidden">
+        <div class="p-6 flex justify-between items-center bg-stone-50/50">
+          <h3 class="text-lg font-headline font-bold text-primary">Recent Curations</h3>
+          <button class="text-secondary text-sm font-bold hover:underline">View All</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-surface-container-low text-[10px] font-bold uppercase tracking-widest text-stone-400">
+              <tr>
+                <th class="px-6 py-4">Item Name</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Client</th>
+                <th class="px-6 py-4">Date</th>
+                <th class="px-6 py-4 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container">
+              <tr class="hover:bg-surface-container-low transition-colors">
+                <td class="px-6 py-5 font-medium text-primary">Andean Orchid Essence</td>
+                <td class="px-6 py-5">
+                  <span
+                    class="px-3 py-1 bg-secondary-fixed text-on-secondary-container text-[10px] font-bold rounded-full">SHIPPED</span>
+                </td>
+                <td class="px-6 py-5 text-stone-600 text-sm">Elena Valerio</td>
+                <td class="px-6 py-5 text-stone-500 text-sm">Oct 24, 2023</td>
+                <td class="px-6 py-5 text-right font-bold text-primary">$340.00</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low transition-colors">
+                <td class="px-6 py-5 font-medium text-primary">Pressed Calceolaria</td>
+                <td class="px-6 py-5">
+                  <span
+                    class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold rounded-full">PENDING</span>
+                </td>
+                <td class="px-6 py-5 text-stone-600 text-sm">Marcello Silva</td>
+                <td class="px-6 py-5 text-stone-500 text-sm">Oct 23, 2023</td>
+                <td class="px-6 py-5 text-right font-bold text-primary">$1,200.00</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low transition-colors">
+                <td class="px-6 py-5 font-medium text-primary">Mountain Sage Batch #42</td>
+                <td class="px-6 py-5">
+                  <span
+                    class="px-3 py-1 bg-secondary-fixed text-on-secondary-container text-[10px] font-bold rounded-full">SHIPPED</span>
+                </td>
+                <td class="px-6 py-5 text-stone-600 text-sm">Sofia Russo</td>
+                <td class="px-6 py-5 text-stone-500 text-sm">Oct 23, 2023</td>
+                <td class="px-6 py-5 text-right font-bold text-primary">$215.50</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Featured Botanical Card (Takes 4 cols) -->
+      <div class="lg:col-span-4 relative rounded-lg overflow-hidden h-full min-h-[400px] group">
+        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          data-alt="close-up of a rare tropical plant with intricate leaf patterns and vibrant green colors in a soft morning mist"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy9JRPTEIA3RmYnDvX6-8i4YQ8ezNWLN21B0QJeNvlcxPT1U_BQ7syFiK4zJXSz25lfCIlrqptEIgRfrrLPeNR1KRcxiYG9DaUsSiJDBFs-0acZv2yOV187m_yR03EgRgwp9m_Y4Rj0iBtNxh0NuAjaqnGME4IDzbKbe8M2IJBP4E91cQXRZLLNvWNE2qDJDCSaAdp5iMuOv4nj8-GNHtQ6iKxlWy7ZyZ6ngzKmToiFhxadg6yYEWEXT9yUaC2CPxSbWAzdlU8pw" />
+        <div class="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent opacity-80"></div>
+        <div class="absolute bottom-0 left-0 p-8 w-full">
+          <span class="px-3 py-1 bg-secondary text-white text-[10px] font-bold rounded-full mb-4 inline-block">ARCHIVE
+            SPOTLIGHT</span>
+          <h4 class="text-3xl font-headline font-extrabold text-white mb-2 leading-tight">Rare Polylepis Curated</h4>
+          <p class="text-white/80 text-sm font-body mb-6">A new batch of high-altitude Polylepis specimens has been
+            digitized and verified for the collection.</p>
+          <button class="flex items-center gap-2 text-white font-bold group">
+            <span>Check Verification</span>
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+              data-icon="arrow_forward">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Contextual FAB for New Sale -->
+  <button
+    class="fixed bottom-8 right-8 w-16 h-16 bg-secondary-container text-on-secondary-container rounded-full shadow-2xl flex items-center justify-center group z-50 active:scale-90 transition-transform">
+    <span class="material-symbols-outlined text-3xl font-bold" data-icon="point_of_sale" data-weight="fill"
+      style="font-variation-settings: 'FILL' 1;">point_of_sale</span>
+    <span
+      class="absolute right-20 bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">Process
+      Sale</span>
+  </button>
+</body>
+
+</html>
