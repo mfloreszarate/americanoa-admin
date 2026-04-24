@@ -7,6 +7,8 @@ interface SidebarNavLinkProps {
   label: string;
   /** Use exact matching for the index route. */
   end?: boolean;
+  /** Indented style for nested items under a collapsible section. */
+  nested?: boolean;
 }
 
 export function SidebarNavLink({
@@ -14,9 +16,11 @@ export function SidebarNavLink({
   icon,
   label,
   end = false,
+  nested = false,
 }: SidebarNavLinkProps) {
-  const base =
-    "flex items-center gap-3 px-4 py-3 rounded-lg font-manrope text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-stone-100/50 dark:hover:bg-stone-900/50 transition-colors scale-95 active:scale-90 duration-200";
+  const base = nested
+    ? "flex items-center gap-2 pl-9 pr-4 py-2 rounded-lg font-manrope text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-stone-100/50 dark:hover:bg-stone-900/50 transition-colors duration-200"
+    : "flex items-center gap-3 px-4 py-3 rounded-lg font-manrope text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-stone-100/50 dark:hover:bg-stone-900/50 transition-colors scale-95 active:scale-90 duration-200";
   const activeCls =
     "font-bold text-purple-900 dark:text-white border-r-4 border-lime-500 hover:bg-stone-100/50 dark:hover:bg-stone-900/50";
 

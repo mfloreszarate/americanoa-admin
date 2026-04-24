@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Modal } from "@/components/ui/modal/Modal";
 import { MaterialIcon } from "@/components/ui/MaterialIcon";
@@ -35,11 +35,15 @@ const defaultValues: NewProductFormValues = {
   stock: "",
 };
 
+const TABS = ["Detalles", "Presentacion", "Precios"] as const;
+type ProductTab = (typeof TABS)[number];
+
 export function NewProductModal({
   open,
   onOpenChange,
   onRegistered,
 }: NewProductModalProps) {
+  const [activeTab, setActiveTab] = useState<ProductTab>("Detalles");
   const formId = useId();
   const {
     register,
@@ -49,7 +53,10 @@ export function NewProductModal({
   } = useForm<NewProductFormValues>({ defaultValues });
 
   useEffect(() => {
-    if (open) reset(defaultValues);
+    if (open) {
+      reset(defaultValues);
+      setActiveTab("Detalles");
+    }
   }, [open, reset]);
 
   function onSubmit(values: NewProductFormValues) {
@@ -96,150 +103,192 @@ export function NewProductModal({
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="Subir imagen del producto"
-          className="group cursor-pointer rounded-2xl border-2 border-dashed border-outline-variant p-12 text-center transition-all hover:border-secondary hover:bg-secondary-container/10"
-          onKeyDown={(e) => {
-            if (e.key === " " || e.key === "Enter") e.preventDefault();
-          }}
-        >
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high text-secondary transition-transform group-hover:scale-110">
-              <MaterialIcon name="add_photo_alternate" className="text-3xl" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-lg font-bold text-primary">
-                Arrastra y suelta la imagen del producto
-              </p>
-              <p className="text-sm text-on-surface-variant">
-                PNG, JPG o WebP hasta 10MB
-              </p>
-            </div>
-          </div>
+        <div className="inline-flex w-full items-center gap-2 rounded-2xl bg-surface-container-high p-1">
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`w-full rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
+                  isActive
+                    ? "bg-surface text-primary shadow-sm"
+                    : "text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface"
+                }`}
+                aria-pressed={isActive}
+              >
+                {tab}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="col-span-2 space-y-2">
-            <label
-              htmlFor={`${formId}-name`}
-              className="ml-1 text-sm font-bold text-on-surface-variant"
+        {activeTab === "Detalles" ? (
+          <>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Subir imagen del producto"
+              className="group cursor-pointer rounded-2xl border-2 border-dashed border-outline-variant p-12 text-center transition-all hover:border-secondary hover:bg-secondary-container/10"
+              onKeyDown={(e) => {
+                if (e.key === " " || e.key === "Enter") e.preventDefault();
+              }}
             >
-              Nombre del Producto
-            </label>
-            <input
-              id={`${formId}-name`}
-              className={inputClass}
-              placeholder="e.g. Polen de Algarrobo"
-              type="text"
-              autoComplete="off"
-              {...register("name", { required: "Obligatorio" })}
-            />
-            {errors.name ? (
-              <p className="ml-1 text-xs font-medium text-error">
-                {errors.name.message}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor={`${formId}-category`}
-              className="ml-1 text-sm font-bold text-on-surface-variant"
-            >
-              Categoría
-            </label>
-            <div className="relative">
-              <select
-                id={`${formId}-category`}
-                className={`${inputClass} appearance-none`}
-                {...register("category", {
-                  validate: (v) => v !== "" || "Elegí una categoría",
-                })}
-              >
-                {CATEGORY_OPTIONS.map((opt) =>
-                  opt === "" ? (
-                    <option key="placeholder" value="">
-                      Selecciona una categoría
-                    </option>
-                  ) : (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ),
-                )}
-              </select>
-              <MaterialIcon
-                name="expand_more"
-                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-outline"
-              />
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high text-secondary transition-transform group-hover:scale-110">
+                  <MaterialIcon name="add_photo_alternate" className="text-3xl" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-lg font-bold text-primary">
+                    Arrastra y suelta la imagen del producto
+                  </p>
+                  <p className="text-sm text-on-surface-variant">
+                    PNG, JPG o WebP hasta 10MB
+                  </p>
+                </div>
+              </div>
             </div>
-            {errors.category ? (
-              <p className="ml-1 text-xs font-medium text-error">
-                {errors.category.message}
-              </p>
-            ) : null}
-          </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="col-span-2 space-y-2">
+                <label
+                  htmlFor={`${formId}-name`}
+                  className="ml-1 text-sm font-bold text-on-surface-variant"
+                >
+                  Nombre del Producto
+                </label>
+                <input
+                  id={`${formId}-name`}
+                  className={inputClass}
+                  placeholder="e.g. Polen de Algarrobo"
+                  type="text"
+                  autoComplete="off"
+                  {...register("name", { required: "Obligatorio" })}
+                />
+                {errors.name ? (
+                  <p className="ml-1 text-xs font-medium text-error">
+                    {errors.name.message}
+                  </p>
+                ) : null}
+              </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor={`${formId}-sku`}
-              className="ml-1 text-sm font-bold text-on-surface-variant"
-            >
-              Código de Barras
-            </label>
-            <input
-              id={`${formId}-sku`}
-              className={inputClass}
-              placeholder="0000000000000"
-              type="text"
-              autoComplete="off"
-              {...register("sku")}
-            />
-          </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor={`${formId}-category`}
+                  className="ml-1 text-sm font-bold text-on-surface-variant"
+                >
+                  Categoría
+                </label>
+                <div className="relative">
+                  <select
+                    id={`${formId}-category`}
+                    className={`${inputClass} appearance-none`}
+                    {...register("category", {
+                      validate: (v) => v !== "" || "Elegí una categoría",
+                    })}
+                  >
+                    {CATEGORY_OPTIONS.map((opt) =>
+                      opt === "" ? (
+                        <option key="placeholder" value="">
+                          Selecciona una categoría
+                        </option>
+                      ) : (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                  <MaterialIcon
+                    name="expand_more"
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-outline"
+                  />
+                </div>
+                {errors.category ? (
+                  <p className="ml-1 text-xs font-medium text-error">
+                    {errors.category.message}
+                  </p>
+                ) : null}
+              </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor={`${formId}-price`}
-              className="ml-1 text-sm font-bold text-on-surface-variant"
-            >
-              Precio por kg/unidad
-            </label>
-            <div className="relative">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-medium text-outline">
-                $
-              </span>
+              <div className="space-y-2">
+                <label
+                  htmlFor={`${formId}-sku`}
+                  className="ml-1 text-sm font-bold text-on-surface-variant"
+                >
+                  Código de Barras
+                </label>
+                <input
+                  id={`${formId}-sku`}
+                  className={inputClass}
+                  placeholder="0000000000000"
+                  type="text"
+                  autoComplete="off"
+                  {...register("sku")}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor={`${formId}-price`}
+                  className="ml-1 text-sm font-bold text-on-surface-variant"
+                >
+                  Precio por kg/unidad
+                </label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-medium text-outline">
+                    $
+                  </span>
+                  <input
+                    id={`${formId}-price`}
+                    className={`${inputClass} pl-8`}
+                    placeholder="10.00"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    {...register("price")}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor={`${formId}-stock`}
+                  className="ml-1 text-sm font-bold text-on-surface-variant"
+                >
+                  Stock Inicial
+                </label>
               <input
-                id={`${formId}-price`}
-                className={`${inputClass} pl-8`}
-                placeholder="10.00"
+                id={`${formId}-stock`}
+                className={inputClass}
+                placeholder="100"
                 type="number"
                 min={0}
-                step="0.01"
-                {...register("price")}
+                step="1"
+                {...register("stock")}
               />
             </div>
-          </div>
+            </div>
+          </>
+        ) : null}
 
-          <div className="space-y-2">
-            <label
-              htmlFor={`${formId}-stock`}
-              className="ml-1 text-sm font-bold text-on-surface-variant"
-            >
-              Stock Inicial
-            </label>
-            <input
-              id={`${formId}-stock`}
-              className={inputClass}
-              placeholder="100"
-              type="number"
-              min={0}
-              step="1"
-              {...register("stock")}
-            />
-          </div>
-        </div>
+        {activeTab === "Presentacion" ? (
+          <section className="rounded-2xl border border-outline-variant bg-surface-container p-6">
+            <h3 className="text-lg font-bold text-primary">Presentacion</h3>
+            <p className="mt-2 text-sm text-on-surface-variant">
+              Configura las variantes y formatos de presentacion del producto.
+            </p>
+          </section>
+        ) : null}
+
+        {activeTab === "Precios" ? (
+          <section className="rounded-2xl border border-outline-variant bg-surface-container p-6">
+            <h3 className="text-lg font-bold text-primary">Precios</h3>
+            <p className="mt-2 text-sm text-on-surface-variant">
+              Define reglas de precios por unidad, por volumen y promociones.
+            </p>
+          </section>
+        ) : null}
       </form>
     </Modal>
   );

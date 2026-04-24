@@ -1,5 +1,8 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "@/components/ui/MaterialIcon";
+import { SidebarNavExpandable } from "@/components/layout/SidebarNavExpandable";
 import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
+import { configuracionNavItems } from "@/data/navigation";
 import type { NavItem } from "@/types/navigation";
 import Logo from "@/assets/logo.png";
 
@@ -30,15 +33,20 @@ export function SideNavBar({
             end={item.to === "/"}
           />
         ))}
+        <SidebarNavExpandable
+          title="Configuración"
+          icon="settings"
+          items={configuracionNavItems}
+        />
       </nav>
       <div className="mt-auto px-4">
-        <button
-          type="button"
+        <Link
+          to="/ventas/nueva"
           className="flex w-full scale-95 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-primary-container px-4 py-3 font-bold text-white transition-transform active:scale-90"
         >
           <MaterialIcon name="add" />
           Nueva Venta
-        </button>
+        </Link>
       </div>
     </aside>
   );
