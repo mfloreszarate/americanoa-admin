@@ -5,6 +5,7 @@ import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import { NewSalePage } from "@/pages/NewSalePage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { SalesPage } from "@/pages/SalesPage";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 export default function App() {
@@ -18,7 +19,7 @@ export default function App() {
           path="/inventario"
           element={<PlaceholderPage title="Inventario" />}
         />
-        <Route path="/ventas" element={<PlaceholderPage title="Ventas" />} />
+        <Route path="/ventas" element={<SalesPage />} />
         <Route path="/ventas/nueva" element={<NewSalePage />} />
         <Route
           path="/reportes"

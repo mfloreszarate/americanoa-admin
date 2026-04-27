@@ -46,6 +46,7 @@ export function NewSalePage() {
   const [paidAmount, setPaidAmount] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     const timerId = window.setInterval(() => {
@@ -54,27 +55,6 @@ export function NewSalePage() {
 
     return () => window.clearInterval(timerId);
   }, []);
-
-  const filteredProducts = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
-
-    if (!query) return sampleProducts;
-
-    return sampleProducts.filter((product) =>
-      [
-        product.id,
-        product.name,
-        product.laboratory,
-        product.category,
-        product.price,
-        product.priceUnit,
-        product.stockLabel,
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(query),
-    );
-  }, [searchQuery]);
 
   const subtotal = useMemo(
     () =>
@@ -85,6 +65,29 @@ export function NewSalePage() {
       ),
     [cartItems],
   );
+
+  const searchSuggestions = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+
+    if (!query) return [];
+
+    return sampleProducts
+      .filter((product) =>
+        [
+          product.id,
+          product.name,
+          product.laboratory,
+          product.category,
+          product.price,
+          product.priceUnit,
+          product.stockLabel,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(query),
+      )
+      .slice(0, 8);
+  }, [searchQuery]);
 
   const appliedDiscount = Math.min(discountAmount, subtotal);
   const total = Math.max(subtotal - appliedDiscount, 0);
@@ -137,6 +140,12 @@ export function NewSalePage() {
     }
 
     setSearchQuery(value);
+  };
+
+  const selectProduct = (product: ProductRow) => {
+    addProduct(product);
+    setSearchQuery("");
+    setSearchFocused(false);
   };
 
   const updateQuantity = (productId: string, delta: number) => {
@@ -215,8 +224,8 @@ export function NewSalePage() {
             </div>
           </header>
 
-          <div className="px-8 py-4">
-            <label className="relative block">
+          <div className="flex items-center gap-3 px-8 py-4">
+            <label className="relative block flex-1">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                 <MaterialIcon name="search" className="text-[20px] text-outline" />
               </span>
@@ -224,14 +233,73 @@ export function NewSalePage() {
                 autoFocus
                 value={searchQuery}
                 onChange={(event) => handleSearchChange(event.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && searchSuggestions[0]) {
+                    event.preventDefault();
+                    selectProduct(searchSuggestions[0]);
+                  }
+                }}
                 className="block w-full rounded-xl border-none bg-surface-container-highest py-3 pl-12 pr-4 text-base font-medium text-on-background placeholder-outline transition-all focus:ring-2 focus:ring-secondary/40"
-                placeholder="Escaneá un código o buscá por nombre, laboratorio, categoría... (Ctrl+F)"
+                placeholder="Escaneá o ingresá un código de barras para agregar al carrito... (Ctrl+F)"
                 type="text"
               />
+              {searchFocused && searchQuery.trim() ? (
+                <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-xl">
+                  {searchSuggestions.length > 0 ? (
+                    <div className="max-h-80 overflow-auto py-1">
+                      {searchSuggestions.map((product) => (
+                        <button
+                          key={product.id}
+                          type="button"
+                          onMouseDown={(event) => {
+                            event.preventDefault();
+                            selectProduct(product);
+                          }}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-container-low"
+                        >
+                          <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-surface-container-high">
+                            <img
+                              src={product.imageSrc}
+                              alt={product.imageAlt}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-on-background">
+                              {product.name}
+                            </p>
+                            <p className="truncate text-[11px] text-outline">
+                              {product.id} - {product.laboratory} - {product.category}
+                            </p>
+                          </div>
+                          <span className="text-sm font-bold text-primary">
+                            {product.price}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="px-4 py-3 text-sm text-outline">
+                      No hay productos que coincidan.
+                    </div>
+                  )}
+                </div>
+              ) : null}
             </label>
+            <button
+              type="button"
+              onClick={() => setCartItems([])}
+              disabled={cartItems.length === 0}
+              className="flex items-center gap-2 rounded-xl bg-error-container px-4 py-3 text-sm font-bold text-error transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <MaterialIcon name="delete_sweep" className="text-[18px]" />
+              Limpiar carrito
+            </button>
           </div>
 
-          <div className="flex-1 overflow-auto px-8 pb-16">
+          <div className="flex-1 overflow-auto px-8 pb-4">
             <div className="overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest">
               <table className="w-full border-collapse text-left">
                 <thead className="sticky top-0 z-10 bg-surface-container-low">
@@ -243,16 +311,16 @@ export function NewSalePage() {
                       Producto
                     </th>
                     <th className="px-6 py-3 text-[10px] font-semibold uppercase tracking-wider text-outline">
-                      Laboratorio
-                    </th>
-                    <th className="px-6 py-3 text-[10px] font-semibold uppercase tracking-wider text-outline">
                       Categoría
                     </th>
+                    <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-outline">
+                      Precio unitario
+                    </th>
                     <th className="px-6 py-3 text-center text-[10px] font-semibold uppercase tracking-wider text-outline">
-                      Stock
+                      Cantidad
                     </th>
                     <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-outline">
-                      Precio
+                      Subtotal
                     </th>
                     <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-outline">
                       Acción
@@ -260,86 +328,204 @@ export function NewSalePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/10">
-                  {filteredProducts.map((product) => (
+                  {cartItems.map((item) => (
                     <tr
-                      key={product.id}
+                      key={item.product.id}
                       className="group transition-colors hover:bg-surface-container-low"
                     >
                       <td className="px-6 py-3 font-mono text-xs text-outline">
-                        {product.id}
+                        {item.product.id}
                       </td>
                       <td className="px-6 py-3">
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-lg bg-surface-container-high">
                             <img
-                              src={product.imageSrc}
-                              alt={product.imageAlt}
+                              src={item.product.imageSrc}
+                              alt={item.product.imageAlt}
                               className="h-full w-full object-cover"
                             />
                           </div>
-                          <span className="truncate text-sm font-medium text-on-background">
-                            {product.name}
-                          </span>
+                          <div className="min-w-0">
+                            <span className="block truncate text-sm font-medium text-on-background">
+                              {item.product.name}
+                            </span>
+                            <span className="text-[10px] font-medium text-outline">
+                              {item.product.laboratory}
+                            </span>
+                          </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-3 text-sm font-semibold text-primary">
-                        {product.laboratory}
                       </td>
                       <td className="px-6 py-3">
                         <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[10px] font-medium">
-                          {product.category}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center">
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                            product.stockTone === "error"
-                              ? "bg-error-container text-on-error-container"
-                              : "bg-secondary-fixed text-on-secondary-fixed"
-                          }`}
-                        >
-                          {product.stockLabel}
+                          {item.product.category}
                         </span>
                       </td>
                       <td className="px-6 py-3 text-right text-sm font-semibold">
-                        {product.price}
+                        {item.product.price}
+                      </td>
+                      <td className="px-6 py-3">
+                        <div className="flex items-center justify-center">
+                          <div className="flex items-center rounded-lg bg-surface-container-high p-0.5">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.product.id, -1)}
+                              className="flex h-7 w-7 items-center justify-center rounded text-sm hover:bg-surface-variant"
+                              aria-label={`Restar ${item.product.name}`}
+                            >
+                              -
+                            </button>
+                            <span className="w-10 text-center text-sm font-bold">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.product.id, 1)}
+                              disabled={item.quantity >= item.product.stockUnits}
+                              className="flex h-7 w-7 items-center justify-center rounded text-sm hover:bg-surface-variant disabled:cursor-not-allowed disabled:opacity-40"
+                              aria-label={`Sumar ${item.product.name}`}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-3 text-right text-sm font-bold text-primary">
+                        {formatCurrency(
+                          priceDisplayToNumber(item.product.price) * item.quantity,
+                        )}
                       </td>
                       <td className="px-6 py-3 text-right">
                         <button
                           type="button"
-                          disabled={product.stockUnits <= 0}
-                          onClick={() => addProduct(product)}
-                          className={
-                            product.stockUnits > 0
-                              ? "inline-flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-white transition-all hover:opacity-90"
-                              : "inline-flex h-7 w-7 cursor-not-allowed items-center justify-center rounded-lg bg-surface-variant text-outline"
-                          }
-                          aria-label={
-                            product.stockUnits > 0
-                              ? `Agregar ${product.name}`
-                              : `${product.name} sin stock`
-                          }
+                          onClick={() => removeProduct(item.product.id)}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-error transition-all hover:bg-error-container/40"
+                          aria-label={`Quitar ${item.product.name}`}
                         >
-                          <MaterialIcon
-                            name={product.stockUnits > 0 ? "add" : "block"}
-                            className="text-[16px]"
-                          />
+                          <MaterialIcon name="delete" className="text-[18px]" />
                         </button>
                       </td>
                     </tr>
                   ))}
-                  {filteredProducts.length === 0 ? (
+                  {cartItems.length === 0 ? (
                     <tr>
                       <td
                         colSpan={7}
                         className="px-6 py-10 text-center text-sm text-outline"
                       >
-                        Ningún producto coincide con la búsqueda.
+                        Escaneá o ingresá un código de barras para agregar productos al carrito.
                       </td>
                     </tr>
                   ) : null}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <div className="border-t border-outline-variant/20 bg-surface-container-high/50 px-8 py-4">
+            <div className="grid grid-cols-[1.1fr_1.4fr_1.6fr_auto] items-end gap-4">
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-outline">Subtotal</span>
+                  <span className="font-medium">{formatCurrency(subtotal)}</span>
+                </div>
+                {appliedDiscount > 0 ? (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-outline">Descuento</span>
+                    <span className="font-medium text-error">
+                      -{formatCurrency(appliedDiscount)}
+                    </span>
+                  </div>
+                ) : null}
+                <div className="flex items-center justify-between border-t border-dashed border-outline-variant pt-2">
+                  <span className="font-headline text-xs font-bold uppercase text-primary">
+                    Total
+                  </span>
+                  <span className="font-headline text-xl font-bold text-primary">
+                    {formatCurrency(total)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                {paymentMethods.map((method) => (
+                  <button
+                    key={method.label}
+                    type="button"
+                    className={
+                      method.selected
+                        ? "flex flex-col items-center justify-center rounded-xl border-2 border-secondary bg-secondary-fixed px-1 py-2 text-on-secondary-fixed"
+                        : "flex flex-col items-center justify-center rounded-xl border-2 border-transparent bg-surface-container-highest px-1 py-2 text-on-surface-variant hover:bg-surface-container-high"
+                    }
+                  >
+                    <MaterialIcon name={method.icon} className="text-[20px]" />
+                    <span className="mt-1 text-[10px] font-bold">{method.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <label>
+                  <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-outline">
+                    Descuento
+                  </span>
+                  <span className="relative block">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-outline">
+                      $
+                    </span>
+                    <input
+                      className="w-full rounded-lg border-none bg-surface-container-lowest py-2 pl-6 font-headline text-lg font-bold text-primary focus:ring-2 focus:ring-primary/20"
+                      type="number"
+                      min={0}
+                      max={subtotal}
+                      value={discountAmount}
+                      onChange={(event) =>
+                        setDiscountAmount(Number(event.target.value) || 0)
+                      }
+                      placeholder="0"
+                    />
+                  </span>
+                </label>
+                <label>
+                  <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-outline">
+                    Paga con
+                  </span>
+                  <span className="relative block">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-outline">
+                      $
+                    </span>
+                    <input
+                      className="w-full rounded-lg border-none bg-surface-container-lowest py-2 pl-6 font-headline text-lg font-bold text-primary focus:ring-2 focus:ring-primary/20"
+                      type="number"
+                      min={0}
+                      value={paidAmount}
+                      onChange={(event) =>
+                        setPaidAmount(Number(event.target.value) || 0)
+                      }
+                    />
+                  </span>
+                </label>
+                <div>
+                  <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-outline">
+                    Vuelto
+                  </span>
+                  <div className="flex w-full items-center justify-between rounded-lg bg-secondary-fixed/50 px-3 py-2 font-headline text-lg font-bold text-secondary">
+                    <span className="text-sm">$</span>
+                    <span>{change.toFixed(2).replace(".", ",")}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="group flex min-w-44 flex-col items-center gap-0.5 rounded-xl bg-gradient-to-r from-primary to-primary-container px-6 py-4 text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span className="font-headline text-sm font-extrabold uppercase tracking-widest transition-all group-hover:tracking-widest">
+                  Finalizar venta
+                </span>
+                <span className="text-[9px] font-medium uppercase opacity-60">
+                  Presioná F12
+                </span>
+              </button>
             </div>
           </div>
 
@@ -359,193 +545,6 @@ export function NewSalePage() {
           </div>
         </div>
 
-        <aside className="flex w-[380px] flex-col border-l border-outline-variant/30 bg-surface-container-low">
-          <div className="flex items-end justify-between border-b border-outline-variant/20 px-6 py-4">
-            <h2 className="font-headline text-lg font-bold text-primary">
-              Carrito actual
-            </h2>
-            <button
-              type="button"
-              onClick={() => setCartItems([])}
-              disabled={cartItems.length === 0}
-              className="flex items-center gap-1 text-xs font-semibold text-error"
-            >
-              <MaterialIcon name="delete_sweep" className="text-[14px]" />
-              Limpiar
-            </button>
-          </div>
-
-          <div className="flex-1 space-y-3 overflow-auto p-4">
-            {cartItems.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-outline-variant/60 bg-surface-container-lowest p-6 text-center text-sm text-outline">
-                Agregá productos desde el listado para iniciar la venta.
-              </div>
-            ) : null}
-            {cartItems.map((item) => (
-              <article
-                key={item.product.id}
-                className="flex items-center justify-between rounded-xl bg-surface-container-lowest p-3 shadow-sm"
-              >
-                <div className="min-w-0 flex-1 pr-2">
-                  <h3 className="truncate text-xs font-semibold text-on-background">
-                    {item.product.name}
-                  </h3>
-                  <p className="mt-0.5 text-[10px] text-outline">
-                    {item.product.price} / {item.product.priceUnit}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center rounded-lg bg-surface-container-high p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => updateQuantity(item.product.id, -1)}
-                      className="flex h-5 w-5 items-center justify-center rounded text-xs hover:bg-surface-variant"
-                      aria-label={`Restar ${item.product.name}`}
-                    >
-                      -
-                    </button>
-                    <span className="w-6 text-center text-xs font-bold">
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => updateQuantity(item.product.id, 1)}
-                      disabled={item.quantity >= item.product.stockUnits}
-                      className="flex h-5 w-5 items-center justify-center rounded text-xs hover:bg-surface-variant"
-                      aria-label={`Sumar ${item.product.name}`}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <span className="w-14 text-right text-xs font-bold text-primary">
-                    {formatCurrency(
-                      priceDisplayToNumber(item.product.price) * item.quantity,
-                    )}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeProduct(item.product.id)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg text-error transition-all hover:bg-error-container/40"
-                    aria-label={`Quitar ${item.product.name}`}
-                  >
-                    <MaterialIcon name="delete" className="text-[16px]" />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="space-y-4 border-t border-outline-variant/30 bg-surface-container-high/50 p-6">
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <span className="text-outline">Subtotal</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-outline">Impuestos (0%)</span>
-                <span className="font-medium">{formatCurrency(0)}</span>
-              </div>
-              {appliedDiscount > 0 ? (
-                <div className="flex justify-between text-xs">
-                  <span className="text-outline">Descuento</span>
-                  <span className="font-medium text-error">
-                    -{formatCurrency(appliedDiscount)}
-                  </span>
-                </div>
-              ) : null}
-              <div className="flex items-center justify-between border-t border-dashed border-outline-variant pt-2">
-                <span className="font-headline text-sm font-bold uppercase text-primary">
-                  Total
-                </span>
-                <span className="font-headline text-2xl font-bold text-primary">
-                  {formatCurrency(total)}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-2">
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method.label}
-                    type="button"
-                    className={
-                      method.selected
-                        ? "flex flex-col items-center justify-center rounded-xl border-2 border-secondary bg-secondary-fixed px-1 py-2 text-on-secondary-fixed"
-                        : "flex flex-col items-center justify-center rounded-xl border-2 border-transparent bg-surface-container-highest px-1 py-2 text-on-surface-variant hover:bg-surface-container-high"
-                    }
-                  >
-                    <MaterialIcon name={method.icon} className="text-[20px]" />
-                    <span className="mt-1 text-[10px] font-bold">{method.label}</span>
-                  </button>
-                ))}
-              </div>
-              <label className="block">
-                <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-outline">
-                  Descuento
-                </span>
-                <span className="relative block">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-outline">
-                    $
-                  </span>
-                  <input
-                    className="w-full rounded-lg border-none bg-surface-container-lowest py-2 pl-6 font-headline text-lg font-bold text-primary focus:ring-2 focus:ring-primary/20"
-                    type="number"
-                    min={0}
-                    max={subtotal}
-                    value={discountAmount}
-                    onChange={(event) =>
-                      setDiscountAmount(Number(event.target.value) || 0)
-                    }
-                    placeholder="0"
-                  />
-                </span>
-              </label>
-              <div className="flex gap-3">
-                <label className="flex-1">
-                  <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-outline">
-                    Paga con
-                  </span>
-                  <span className="relative block">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-outline">
-                      $
-                    </span>
-                    <input
-                      className="w-full rounded-lg border-none bg-surface-container-lowest py-2 pl-6 font-headline text-lg font-bold text-primary focus:ring-2 focus:ring-primary/20"
-                      type="number"
-                      min={0}
-                      value={paidAmount}
-                      onChange={(event) =>
-                        setPaidAmount(Number(event.target.value) || 0)
-                      }
-                    />
-                  </span>
-                </label>
-                <div className="flex-1">
-                  <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-outline">
-                    Vuelto
-                  </span>
-                  <div className="flex w-full items-center justify-between rounded-lg bg-secondary-fixed/50 px-3 py-2 font-headline text-lg font-bold text-secondary">
-                    <span className="text-sm">$</span>
-                    <span>{change.toFixed(2).replace(".", ",")}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="group flex w-full flex-col items-center gap-0.5 rounded-xl bg-gradient-to-r from-primary to-primary-container py-4 text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <span className="font-headline text-base font-extrabold uppercase tracking-widest transition-all group-hover:tracking-widest">
-                Finalizar venta
-              </span>
-              <span className="text-[9px] font-medium uppercase opacity-60">
-                Presioná F12
-              </span>
-            </button>
-          </div>
-        </aside>
       </section>
     </main>
   );
